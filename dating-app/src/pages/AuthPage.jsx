@@ -2,10 +2,12 @@
 import React from "react";
 import Login from "./Login";
 import Signup from "./Signup";
+// react-icons
+import { FaYoutube, FaTiktok, FaTwitter, FaGooglePlay } from "react-icons/fa";
 
 export default function AuthPage({ onLogin }) {
   return (
-    <div style={{ minHeight: "100vh", background: "#f9f9f9" }}>
+    <div style={{ minHeight: "100vh", background: "#f9f9f9", display: "flex", flexDirection: "column" }}>
       {/* Top bar */}
       <div
         style={{
@@ -56,16 +58,8 @@ export default function AuthPage({ onLogin }) {
         </div>
       </div>
 
-
-
       {/* 3-column TEXTS below */}
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          minHeight: "100px",
-        }}
-      >
+      <div style={{ display: "flex", width: "100%", minHeight: "100px" }}>
         <div
           style={{
             flex: 1,
@@ -106,14 +100,9 @@ export default function AuthPage({ onLogin }) {
           how good are u
         </div>
       </div>
-           {/* 3-column IMAGES */}
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          minHeight: "250px",
-        }}
-      >
+
+      {/* 3-column IMAGES */}
+      <div style={{ display: "flex", width: "100%", minHeight: "250px" }}>
         <div
           style={{
             flex: 1,
@@ -125,8 +114,7 @@ export default function AuthPage({ onLogin }) {
         <div
           style={{
             flex: 1,
-            backgroundImage:
-              "url('/dmitry-ganin-Qq_EbjdTkzo-unsplash (1).jpg')",
+            backgroundImage: "url('/dmitry-ganin-Qq_EbjdTkzo-unsplash (1).jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -134,14 +122,78 @@ export default function AuthPage({ onLogin }) {
         <div
           style={{
             flex: 1,
-            backgroundImage:
-              "url('/allef-vinicius-pOrrjxBo6i4-unsplash (1).jpg')",
+            backgroundImage: "url('/allef-vinicius-pOrrjxBo6i4-unsplash (1).jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         />
       </div>
 
+      {/* captions under each photo */}
+      <div style={{ display: "flex", width: "100%" }}>
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            padding: "10px",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            background: "#f2f2f2",
+          }}
+        >
+          how are u
+        </div>
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            padding: "10px",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            background: "#e6e6e6",
+          }}
+        >
+          wat a uddcscb
+        </div>
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            padding: "10px",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            background: "#d9d9d9",
+          }}
+        >
+          feydfa dh sda
+        </div>
+      </div>
+
+      {/* Footer with icons */}
+      <footer
+        style={{
+          backgroundColor: "#333",
+          color: "#fff",
+          padding: "15px 0",
+          marginTop: "auto",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "20px",
+          }}
+        >
+          <FaYoutube size={24} />
+          <FaTiktok size={24} />
+          <FaTwitter size={24} />
+          <FaGooglePlay size={24} />
+        </div>
+        <p style={{ textAlign: "center", fontSize: "0.9rem", marginTop: "5px" }}>
+          © 2025 My App
+        </p>
+      </footer>
     </div>
   );
 }
