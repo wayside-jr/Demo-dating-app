@@ -35,7 +35,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    photo = db.Column(db.String(200), nullable=True)  # store uploaded photo filename
+    photo = db.Column(db.String(200), nullable=True)
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,24 +55,20 @@ with app.app_context():
 # --------------------------
 @app.route('/auth/signup', methods=['POST'])
 def signup():
-    # Support form-data with optional file
     username = request.form.get('username')
     email = request.form.get('email')
     password = request.form.get('password')
-    photo_file = request.files.get('photo')  # file upload
+    photo_file = request.files.get('photo')
 
     if User.query.filter_by(email=email).first():
         return jsonify({'msg': 'Email already exists'}), 400
 
     hashed_pw = bcrypt.generate_password_hash(password).decode('utf-8')
-
-    # Save photo if uploaded
     photo_filename = None
     if photo_file:
         ext = os.path.splitext(photo_file.filename)[1]
         photo_filename = f"{datetime.utcnow().timestamp()}_{username}{ext}"
-        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
-        photo_file.save(photo_path)
+        photo_file.save(os.path.join(app.config['UPLOAD_FOLDER'], photo_filename))
 
     new_user = User(username=username, email=email, password=hashed_pw, photo=photo_filename)
     db.session.add(new_user)
@@ -96,7 +92,65 @@ def login():
         }), 200
     return jsonify({'msg': 'Invalid credentials'}), 401
 
+# Edit profile
+@app.route('/auth/edit', methods=['PUT'])
+@jwt_required()
+def edit_profile():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({'msg': 'User not found'}), 404
+
+    username = request.form.get('username')
+    email = request.form.get('email')
+    photo_file = request.files.get('photo')
+
+    if username: 
+        user.username = username
+    if email: 
+        user.email = email
+    if photo_file:
+        # delete old photo if exists
+        if user.photo:
+            old_path = os.path.join(app.config['UPLOAD_FOLDER'], user.photo)
+            if os.path.exists(old_path):
+                os.remove(old_path)
+        ext = os.path.splitext(photo_file.filename)[1]
+        photo_filename = f"{datetime.utcnow().timestamp()}_{user.id}{ext}"
+        photo_file.save(os.path.join(app.config['UPLOAD_FOLDER'], photo_filename))
+        user.photo = photo_filename
+
+    db.session.commit()
+
+    # Return full updated user object
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'photo': user.photo
+    }), 200
+
+# Delete account
+@app.route('/auth/delete', methods=['DELETE'])
+@jwt_required()
+def delete_account():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({'msg': 'User not found'}), 404
+
+    if user.photo:
+        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], user.photo)
+        if os.path.exists(photo_path):
+            os.remove(photo_path)
+
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'msg': 'Account deleted successfully'}), 200
+
+# --------------------------
 # Serve uploaded photos
+# --------------------------
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
@@ -110,14 +164,20 @@ def get_users():
     current_user_id = get_jwt_identity()
     users = User.query.filter(User.id != int(current_user_id)).all()
     output = [
-        {
-            'id': u.id,
-            'username': u.username,
-            'email': u.email,
-            'photo': u.photo
-        } for u in users
+        {'id': u.id, 'username': u.username, 'email': u.email, 'photo': u.photo}
+        for u in users
     ]
     return jsonify(output), 200
+
+# Get current logged-in user
+@app.route('/users/me', methods=['GET'])
+@jwt_required()
+def get_me():
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    if not user:
+        return jsonify({'msg': 'User not found'}), 404
+    return jsonify({'id': user.id, 'username': user.username, 'email': user.email, 'photo': user.photo}), 200
 
 # --------------------------
 # Chat Routes
@@ -196,21 +256,13 @@ def handle_send_message(data):
         'content': data['content'],
         'timestamp': data.get('timestamp') or datetime.utcnow().isoformat()
     }
-
-    # Broadcast to the room
     emit('receive_message', message, room=room)
-
-    # Save to DB if not already saved
     if not data.get('id'):
-        new_msg = Message(
-            sender_id=data['sender_id'],
-            receiver_id=data['receiver_id'],
-            content=data['content']
-        )
+        new_msg = Message(sender_id=data['sender_id'], receiver_id=data['receiver_id'], content=data['content'])
         db.session.add(new_msg)
         db.session.commit()
         message['id'] = new_msg.id
-        emit('receive_message', message, room=room)  # ensure everyone gets DB id
+        emit('receive_message', message, room=room)
 
 # --------------------------
 # Run
