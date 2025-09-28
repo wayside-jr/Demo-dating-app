@@ -1,0 +1,119 @@
+.users-page {
+  display: flex;
+  min-height: 100vh;
+  background: #f9f9f9;
+}
+
+/* side panel */
+.users-sidepanel {
+  width: 250px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.users-sidepanel h2 {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.users-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+/* big user card */
+/* Make photo fill entire card */
+.user-card.big {
+  background: #ffffff;
+  border-radius: 12px;
+  width: 400px;
+  height: 450px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.user-photo-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.user-photo.big {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* overlay info */
+.user-info-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  text-align: center;
+}
+
+.user-info-overlay h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.user-info-overlay p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Chat button outside */
+/* Chat button now below the card */
+.chat-btn.outside {
+  margin-top: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.chat-btn.outside:hover {
+  background: #1d4ed8;
+}
+.user-card-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.arrow-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #2563eb;
+  padding: 10px;
+  transition: color 0.2s;
+}
+
+.arrow-btn:hover {
+  color: #1d4ed8;
+}
+
+.arrow-btn.left {
+  margin-right: 10px;
+}
+
+.arrow-btn.right {
+  margin-left: 10px;
+}
+
