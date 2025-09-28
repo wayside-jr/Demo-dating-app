@@ -46,13 +46,6 @@ export default function Users({ token }) {
     setCurrentIndex((prev) => (prev < users.length - 1 ? prev + 1 : 0));
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    navigate("/login");
-  };
-
   const mainUser = users[currentIndex];
 
   return (
@@ -62,7 +55,6 @@ export default function Users({ token }) {
         <h2>Logged In</h2>
         <h3>{loggedUser.username}</h3>
         <p>{loggedUser.email}</p>
-       
       </aside>
 
       {/* Main content */}
@@ -78,7 +70,11 @@ export default function Users({ token }) {
             <div className="user-card-block">
               <div key={mainUser.id} className="user-card big">
                 <img
-                  src={`https://i.pravatar.cc/600?u=${mainUser.id}`}
+                  src={
+                    mainUser.photo
+                      ? `http://127.0.0.1:5000/uploads/${mainUser.photo}`
+                      : `https://i.pravatar.cc/600?u=${mainUser.id}`
+                  }
                   alt={mainUser.username}
                   className="user-photo big"
                 />

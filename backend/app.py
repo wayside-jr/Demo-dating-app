@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, decode_token
@@ -14,10 +14,13 @@ CORS(app, supports_credentials=True)
 # Config
 # --------------------------
 basedir = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_FOLDER = os.path.join(basedir, "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'dating.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -32,6 +35,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    photo = db.Column(db.String(200), nullable=True)  # store uploaded photo filename
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -51,16 +55,26 @@ with app.app_context():
 # --------------------------
 @app.route('/auth/signup', methods=['POST'])
 def signup():
-    data = request.get_json()
-    username = data.get('username')
-    email = data.get('email')
-    password = data.get('password')
+    # Support form-data with optional file
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    photo_file = request.files.get('photo')  # file upload
 
     if User.query.filter_by(email=email).first():
         return jsonify({'msg': 'Email already exists'}), 400
 
     hashed_pw = bcrypt.generate_password_hash(password).decode('utf-8')
-    new_user = User(username=username, email=email, password=hashed_pw)
+
+    # Save photo if uploaded
+    photo_filename = None
+    if photo_file:
+        ext = os.path.splitext(photo_file.filename)[1]
+        photo_filename = f"{datetime.utcnow().timestamp()}_{username}{ext}"
+        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
+        photo_file.save(photo_path)
+
+    new_user = User(username=username, email=email, password=hashed_pw, photo=photo_filename)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'msg': 'User created successfully'}), 201
@@ -74,8 +88,18 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user and bcrypt.check_password_hash(user.password, password):
         access_token = create_access_token(identity=str(user.id))
-        return jsonify({'access_token': access_token, 'username': user.username, 'user_id': user.id}), 200
+        return jsonify({
+            'access_token': access_token,
+            'username': user.username,
+            'user_id': user.id,
+            'photo': user.photo
+        }), 200
     return jsonify({'msg': 'Invalid credentials'}), 401
+
+# Serve uploaded photos
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # --------------------------
 # Users Route
@@ -85,11 +109,18 @@ def login():
 def get_users():
     current_user_id = get_jwt_identity()
     users = User.query.filter(User.id != int(current_user_id)).all()
-    output = [{'id': u.id, 'username': u.username, 'email': u.email} for u in users]
+    output = [
+        {
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'photo': u.photo
+        } for u in users
+    ]
     return jsonify(output), 200
 
 # --------------------------
-# Chat Routes (REST)
+# Chat Routes
 # --------------------------
 @app.route('/messages', methods=['POST'])
 @jwt_required()
