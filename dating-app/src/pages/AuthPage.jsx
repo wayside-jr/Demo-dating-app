@@ -7,8 +7,10 @@ import { FaYoutube, FaTiktok, FaTwitter, FaGooglePlay } from "react-icons/fa";
 
 export default function AuthPage({ onLogin }) {
   return (
-    <div style={{ minHeight: "100vh", background: "#f9f9f9", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100vh", background: "#f9f9f9", display: "flex", flexDirection: "column" , }}>
       {/* Top bar */}
+
+      
       <div
         style={{
           display: "flex",
@@ -26,7 +28,8 @@ export default function AuthPage({ onLogin }) {
             background: "#fff",
             padding: "10px 15px",
             borderRadius: "8px",
-            marginLeft: "760px",
+            marginLeft: "560px",
+            marginRight: "400px"
           }}
         >
           <Login onLogin={onLogin} />
@@ -39,50 +42,50 @@ export default function AuthPage({ onLogin }) {
           backgroundImage: "url('/sajad-nazeran-g3Wi7ud9IZA-unsplash.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          width: "96%",
-          minHeight: "750px",
+          width: "90%",
+          minHeight: "650px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
         {/* Left: Hero Text */}
-        {/* Left: Hero Text */}
-      <div
-        style={{
-          flex: 1,
-          color: "#fff",
-          maxWidth: "500px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          height: "100%",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "60px",
-            lineHeight: "1.1",
-            margin: 0,
-            whiteSpace: "pre-line", // important
-          }}
-        >
-          Get Who{'\n'}Gets You
-        </h1>
-      </div>
-
+<div
+  style={{
+    flex: 1,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    minWidth: "400px",
+    marginLeft:"100px" // ensure enough width
+  }}
+>
+  <h1
+    style={{
+      fontSize: "80px",
+      margin: 0,
+      lineHeight: "1.2",
+      whiteSpace: "normal",
+      marginBottom: "500px",
+      color: "#7a3b3bff"
+    }}
+  >
+    Get Who<br />Gets You
+  </h1>
+</div>
 
 
         {/* Signup form container */}
         <div
           style={{
-            background: "rgba(255,255,255,0.9)",
-            padding: "30px",
+            
+            padding: "90px",
             borderRadius: "8px",
             boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
             maxWidth: "400px",
             width: "100%",
-            marginRight: "800px",
+            marginRight: "500px",
             marginTop: "200px"
           }}
         >
@@ -92,7 +95,7 @@ export default function AuthPage({ onLogin }) {
       </div>
 
       {/* 3-column TEXTS below */}
-      <div style={{ display: "flex", width: "96%", minHeight: "250px" }}>
+      <div style={{ display: "flex", width: "90%", minHeight: "250px" }}>
         <div
           style={{
             flex: 1,
@@ -101,7 +104,7 @@ export default function AuthPage({ onLogin }) {
             alignItems: "center",
             fontSize: "1.2rem",
             fontWeight: "bold",
-            background: "#f2f2f2",
+            background: "#f0ededff",
             
           }}
         >
@@ -115,7 +118,7 @@ export default function AuthPage({ onLogin }) {
             alignItems: "center",
             fontSize: "1.2rem",
             fontWeight: "bold",
-            background: "#e6e6e6",
+            background: "#d47878ff",
           }}
         >
           Get a Date Within 10Minutes
@@ -128,18 +131,18 @@ export default function AuthPage({ onLogin }) {
             alignItems: "center",
             fontSize: "1.2rem",
             fontWeight: "bold",
-            background: "#d9d9d9",
+            background: "#774040ff",
           }}
         >
           Match and Find Love
         </div>
       </div>
       <div style={{ textAlign: "center" , minHeight: "120px" , justifyContent: "center"}}>
-        <h1 style={{ fontSize:"30px" , justifyContent: "center" ,color:"red", marginTop:"50px"}}>Our App Helps You Find True Love In The World Where Love Died</h1>
+        <h1 style={{ fontSize:"24px" , justifyContent: "center" ,color:"red", marginTop:"50px"}}>Our App Helps You Find True Love In The World Where Love Died</h1>
       </div>
 
       {/* 3-column IMAGES */}
-      <div style={{ display: "flex", width: "96%", minHeight: "350px" }}>
+      <div style={{ display: "flex", width: "80%", minHeight: "350px", padding: "10px" }}>
         <div
           style={{
             flex: 1,
@@ -155,7 +158,9 @@ export default function AuthPage({ onLogin }) {
             backgroundImage: "url('/dmitry-ganin-Qq_EbjdTkzo-unsplash (1).jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            borderRadius: "70px"
+            borderRadius: "70px",
+            marginLeft: "150px"
+            
           }}
         />
         <div
@@ -164,13 +169,14 @@ export default function AuthPage({ onLogin }) {
             backgroundImage: "url('/allef-vinicius-pOrrjxBo6i4-unsplash (1).jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            borderRadius: "70px"
+            borderRadius: "70px",
+            marginLeft: "150px"
           }}
         />
       </div>
 
       {/* captions under each photo */}
-      <div style={{ display: "flex", width: "100%" }}>
+      <div style={{ display: "flex", width: "79%" , minHeight: "100px" }}>
         <div
           style={{
             flex: 1,
@@ -178,7 +184,7 @@ export default function AuthPage({ onLogin }) {
             padding: "10px",
             fontSize: "1.1rem",
             fontWeight: "bold",
-            background: "#f2f2f2",
+            marginTop: "30px"
           }}
         >
           Millions Have Find Love
@@ -190,7 +196,7 @@ export default function AuthPage({ onLogin }) {
             padding: "10px",
             fontSize: "1.1rem",
             fontWeight: "bold",
-            background: "#e6e6e6",
+            marginTop: "30px"
           }}
         >
           Find Who Truly Gets You
@@ -202,7 +208,7 @@ export default function AuthPage({ onLogin }) {
             padding: "10px",
             fontSize: "1.1rem",
             fontWeight: "bold",
-            background: "#d9d9d9",
+            marginTop: "30px"
           }}
         >
           Love That Lasts Forever
@@ -212,10 +218,11 @@ export default function AuthPage({ onLogin }) {
       {/* Footer with icons */}
       <footer
         style={{
-          backgroundColor: "#333",
+          backgroundColor: "#b47070ff",
           color: "#fff",
-          padding: "15px 0",
+          padding: "70px 0",
           marginTop: "auto",
+          width: "90%"
         }}
       >
         <div

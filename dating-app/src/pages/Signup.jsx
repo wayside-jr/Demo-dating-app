@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup, login } from "../api";
+import "./signup.css"; // import the CSS file
 
 export default function Signup({ onLogin }) {
   const [username, setUsername] = useState("");
@@ -49,38 +50,44 @@ export default function Signup({ onLogin }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} encType="multipart/form-data">
-      <h2>Sign Up</h2>
-      {msg && <p>{msg}</p>}
+    <div className="signup-container">
+      <h3 className="signup-title">Sign Up</h3>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className="signup-form">
+        {msg && (
+          <p className={`signup-msg ${msg.includes("failed") ? "error" : "success"}`}>
+            {msg}
+          </p>
+        )}
 
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      />
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setPhoto(e.target.files[0])}
-      />
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPhoto(e.target.files[0])}
+        />
 
-      <button type="submit">Sign Up</button>
-    </form>
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
   );
 }
