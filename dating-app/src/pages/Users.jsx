@@ -2,11 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Users.css";
 
-export default function Users({ token, currentUser, setCurrentUser }) {
+export default function Users({ token, currentUser, setCurrentUser, onLogout }) {
   const [users, setUsers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
+  // Use currentUser from props for side panel
+  const loggedUser = currentUser;
+
+  // Fetch other users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -28,15 +32,20 @@ export default function Users({ token, currentUser, setCurrentUser }) {
     navigate(`/chat/${user.id}`, { state: { username: user.username } });
   };
 
-  const handlePrev = () => setCurrentIndex(prev => (prev > 0 ? prev - 1 : users.length - 1));
-  const handleNext = () => setCurrentIndex(prev => (prev < users.length - 1 ? prev + 1 : 0));
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : users.length - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev < users.length - 1 ? prev + 1 : 0));
+  };
 
   const handleEditProfile = () => {
-    navigate("/edit-profile"); // App.jsx ensures currentUser is passed
+    navigate("/edit-profile");
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    onLogout && onLogout();
     navigate("/auth");
   };
 
@@ -45,21 +54,35 @@ export default function Users({ token, currentUser, setCurrentUser }) {
   return (
     <div className="users-page">
       <aside className="users-sidepanel">
-        {currentUser.photo ? (
+        {loggedUser.photo ? (
           <img
-            src={`http://127.0.0.1:5000/uploads/${currentUser.photo}`}
-            alt={currentUser.username}
+            src={`http://127.0.0.1:5000/uploads/${loggedUser.photo}`}
+            alt={loggedUser.username}
             className="sidepanel-photo"
           />
         ) : (
           <div className="sidepanel-placeholder">No Photo</div>
         )}
+        <h3>{loggedUser.username}</h3>
+        <p>{loggedUser.email}</p>
 
-        <h3>{currentUser.username}</h3>
-        <p>{currentUser.email}</p>
+        <button
+          onClick={handleEditProfile}
+          style={{
+            marginTop: "10px",
+            padding: "6px 12px",
+            background: "#2563eb",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            width: "100%",
+          }}
+        >
+          Edit Profile
+        </button>
 
-        <button onClick={handleEditProfile} className="edit-btn">Edit Profile</button>
-       
+     
       </aside>
 
       <main className="users-main">
@@ -67,14 +90,18 @@ export default function Users({ token, currentUser, setCurrentUser }) {
           <p>No users available</p>
         ) : (
           <div className="user-card-wrapper">
-            <button className="arrow-btn left" onClick={handlePrev}>&#8592;</button>
+            <button className="arrow-btn left" onClick={handlePrev}>
+              &#8592;
+            </button>
 
             <div className="user-card-block">
               <div key={mainUser.id} className="user-card big">
                 <img
-                  src={mainUser.photo
-                    ? `http://127.0.0.1:5000/uploads/${mainUser.photo}`
-                    : `https://i.pravatar.cc/600?u=${mainUser.id}`}
+                  src={
+                    mainUser.photo
+                      ? `http://127.0.0.1:5000/uploads/${mainUser.photo}`
+                      : `https://i.pravatar.cc/600?u=${mainUser.id}`
+                  }
                   alt={mainUser.username}
                   className="user-photo big"
                 />
@@ -83,10 +110,15 @@ export default function Users({ token, currentUser, setCurrentUser }) {
                   <p>{mainUser.email}</p>
                 </div>
               </div>
-              <button onClick={() => handleChat(mainUser)} className="chat-btn outside">Chat</button>
+
+              <button onClick={() => handleChat(mainUser)} className="chat-btn outside">
+                Chat
+              </button>
             </div>
 
-            <button className="arrow-btn right" onClick={handleNext}>&#8594;</button>
+            <button className="arrow-btn right" onClick={handleNext}>
+              &#8594;
+            </button>
           </div>
         )}
       </main>

@@ -65,9 +65,18 @@ function App() {
           />
           <Route
             path="/users"
-            element={token ? (
-              <Users token={token} currentUser={currentUser} setCurrentUser={setCurrentUser} />
-            ) : <Navigate to="/auth" />}
+            element={
+              token ? (
+                <Users
+                  token={token}
+                  currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <Navigate to="/auth" />
+              )
+            }
           />
           <Route
             path="/chat/:id"
@@ -75,9 +84,18 @@ function App() {
           />
           <Route
             path="/edit-profile"
-            element={token ? (
-              <EditProfile token={token} currentUser={currentUser} setCurrentUser={setCurrentUser} />
-            ) : <Navigate to="/auth" />}
+            element={
+              token ? (
+                <EditProfile
+                  token={token}
+                  currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <Navigate to="/auth" />
+              )
+            }
           />
         </Routes>
       </div>
