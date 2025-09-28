@@ -13,20 +13,25 @@ export default function Login({ onLogin }) {
     try {
       const res = await login({ email, password });
 
-      const token = res.data.access_token;
-      const username = res.data.username;
-      const photo = res.data.photo; // NEW: get photo from backend
+      const data = res.data;
+      const token = data.access_token;
 
-      // Save token & user info
+      const userData = {
+        username: data.username,
+        email: email,
+        photo: data.photo || "",
+      };
+
+      // Save token & user info in localStorage
       localStorage.setItem("token", token);
-      localStorage.setItem("username", username);
-      localStorage.setItem("email", email);
-      localStorage.setItem("photo", photo); // NEW
+      localStorage.setItem("username", userData.username);
+      localStorage.setItem("email", userData.email);
+      localStorage.setItem("photo", userData.photo);
 
       // Update App state
-      onLogin(token);
+      onLogin(token, userData);
 
-      // Redirect to users page
+      // Redirect to Users page
       navigate("/users");
     } catch (err) {
       setError(err.response?.data?.msg || "Login failed");

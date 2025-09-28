@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signup } from "../api"; // adapted for FormData
+import { signup, login } from "../api";
 
-export default function Signup() {
+export default function Signup({ onLogin }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,16 +19,30 @@ export default function Signup() {
       formData.append("password", password);
       if (photo) formData.append("photo", photo);
 
+      // Signup user
       await signup(formData);
 
-      setMsg("Account created! You can login now.");
-      setUsername("");
-      setEmail("");
-      setPassword("");
-      setPhoto(null);
+      setMsg("Account created! Logging in...");
 
-      // Redirect to Auth page (where login form exists)
-      setTimeout(() => navigate("/auth"), 1500);
+      // Auto-login after signup
+      const res = await login({ email, password });
+      const data = res.data;
+      const token = data.access_token;
+
+      const userData = {
+        username: data.username,
+        email,
+        photo: data.photo || "",
+      };
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("username", userData.username);
+      localStorage.setItem("email", userData.email);
+      localStorage.setItem("photo", userData.photo);
+
+      onLogin(token, userData);
+
+      navigate("/users");
     } catch (err) {
       setMsg(err?.response?.data?.msg || "Signup failed");
     }

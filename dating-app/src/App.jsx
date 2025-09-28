@@ -13,7 +13,7 @@ function App() {
     photo: localStorage.getItem("photo") || "",
   });
 
-  // Keep localStorage in sync
+  // Sync currentUser to localStorage
   useEffect(() => {
     localStorage.setItem("username", currentUser.username);
     localStorage.setItem("email", currentUser.email);
@@ -23,7 +23,11 @@ function App() {
   const handleLogin = (newToken, userData) => {
     setToken(newToken);
     localStorage.setItem("token", newToken);
-    setCurrentUser(userData);
+    setCurrentUser({
+      username: userData.username,
+      email: userData.email,
+      photo: userData.photo || "",
+    });
   };
 
   const handleLogout = () => {
@@ -35,6 +39,7 @@ function App() {
   return (
     <Router>
       <div>
+        {/* Global Logout button */}
         {token && (
           <button
             onClick={handleLogout}
@@ -55,48 +60,59 @@ function App() {
         )}
 
         <Routes>
+          {/* Default route */}
           <Route
             path="/"
             element={token ? <Navigate to="/users" /> : <Navigate to="/auth" />}
           />
+
+          {/* Auth page */}
           <Route
             path="/auth"
-            element={token ? <Navigate to="/users" /> : <AuthPage onLogin={handleLogin} />}
+            element={
+              token
+                ? <Navigate to="/users" />
+                : <AuthPage onLogin={handleLogin} />
+            }
           />
+
+          {/* Users page */}
           <Route
             path="/users"
             element={
-              token ? (
-                <Users
-                  token={token}
-                  currentUser={currentUser}
-                  setCurrentUser={setCurrentUser}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Navigate to="/auth" />
-              )
+              token
+                ? <Users
+                    token={token}
+                    currentUser={currentUser}
+                    setCurrentUser={setCurrentUser}
+                  />
+                : <Navigate to="/auth" />
             }
           />
+
+          {/* Chat page */}
           <Route
             path="/chat/:id"
             element={token ? <Chat token={token} /> : <Navigate to="/auth" />}
           />
+
+          {/* Edit profile */}
           <Route
             path="/edit-profile"
             element={
-              token ? (
-                <EditProfile
-                  token={token}
-                  currentUser={currentUser}
-                  setCurrentUser={setCurrentUser}
-                  onLogout={handleLogout}
-                />
-              ) : (
-                <Navigate to="/auth" />
-              )
+              token
+                ? <EditProfile
+                    token={token}
+                    currentUser={currentUser}
+                    setCurrentUser={setCurrentUser}
+                    onLogout={handleLogout}
+                  />
+                : <Navigate to="/auth" />
             }
           />
+
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </Router>
