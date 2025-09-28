@@ -1,4 +1,5 @@
 // src/pages/AuthPage.jsx
+import React from "react";
 import Login from "./Login";
 import Signup from "./Signup";
 
@@ -15,7 +16,6 @@ export default function AuthPage({ onLogin }) {
           borderBottom: "1px solid #eee",
         }}
       >
-        {/* Login form at top-right */}
         <div
           style={{
             background: "#fff",
@@ -31,8 +31,7 @@ export default function AuthPage({ onLogin }) {
       {/* Section with background photo */}
       <div
         style={{
-          backgroundImage:
-            "url('/sajad-nazeran-g3Wi7ud9IZA-unsplash.jpg')",
+          backgroundImage: "url('/sajad-nazeran-g3Wi7ud9IZA-unsplash.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           width: "100%",
@@ -42,7 +41,6 @@ export default function AuthPage({ onLogin }) {
           alignItems: "center",
         }}
       >
-        {/* Sign up card */}
         <div
           style={{
             background: "rgba(255,255,255,0.9)",
@@ -58,23 +56,25 @@ export default function AuthPage({ onLogin }) {
         </div>
       </div>
 
-      {/* New 3-column section */}
+
+
+      {/* 3-column TEXTS below */}
       <div
         style={{
           display: "flex",
           width: "100%",
-          minHeight: "200px", // height of the section
+          minHeight: "100px",
         }}
       >
         <div
           style={{
             flex: 1,
-            background: "#f2f2f2",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: "1.2rem",
             fontWeight: "bold",
+            background: "#f2f2f2",
           }}
         >
           the first is good
@@ -82,12 +82,12 @@ export default function AuthPage({ onLogin }) {
         <div
           style={{
             flex: 1,
-            background: "#e6e6e6",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: "1.2rem",
             fontWeight: "bold",
+            background: "#e6e6e6",
           }}
         >
           the third is good
@@ -95,17 +95,53 @@ export default function AuthPage({ onLogin }) {
         <div
           style={{
             flex: 1,
-            background: "#d9d9d9",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             fontSize: "1.2rem",
             fontWeight: "bold",
+            background: "#d9d9d9",
           }}
         >
           how good are u
         </div>
       </div>
+           {/* 3-column IMAGES */}
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          minHeight: "250px",
+        }}
+      >
+        <div
+          style={{
+            flex: 1,
+            backgroundImage: "url('/freddie-addery-UlcD_8t_zek-unsplash.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div
+          style={{
+            flex: 1,
+            backgroundImage:
+              "url('/dmitry-ganin-Qq_EbjdTkzo-unsplash (1).jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div
+          style={{
+            flex: 1,
+            backgroundImage:
+              "url('/allef-vinicius-pOrrjxBo6i4-unsplash (1).jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+      </div>
+
     </div>
   );
 }
