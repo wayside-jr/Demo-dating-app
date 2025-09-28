@@ -1,34 +1,35 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signup } from "../api"; // we’ll adapt this to accept FormData
+import { signup } from "../api"; // adapted for FormData
 
 export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [photo, setPhoto] = useState(null); // NEW state for image
+  const [photo, setPhoto] = useState(null);
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // build multipart form data
       const formData = new FormData();
       formData.append("username", username);
       formData.append("email", email);
       formData.append("password", password);
-      if (photo) {
-        formData.append("photo", photo);
-      }
+      if (photo) formData.append("photo", photo);
 
-      // call signup API with formData instead of JSON
       await signup(formData);
 
       setMsg("Account created! You can login now.");
-      setTimeout(() => navigate("/login"), 1500);
+      setUsername("");
+      setEmail("");
+      setPassword("");
+      setPhoto(null);
+
+      // Redirect to Auth page (where login form exists)
+      setTimeout(() => navigate("/auth"), 1500);
     } catch (err) {
-      // fallback if error structure different
       setMsg(err?.response?.data?.msg || "Signup failed");
     }
   };
@@ -59,8 +60,6 @@ export default function Signup() {
         onChange={(e) => setPassword(e.target.value)}
         required
       />
-
-      {/* NEW photo input */}
       <input
         type="file"
         accept="image/*"
