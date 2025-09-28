@@ -15,10 +15,13 @@ export default function Login({ onLogin }) {
 
       const token = res.data.access_token;
       const username = res.data.username;
+      const photo = res.data.photo; // NEW: get photo from backend
 
-      // Save token & username
+      // Save token & user info
       localStorage.setItem("token", token);
       localStorage.setItem("username", username);
+      localStorage.setItem("email", email);
+      localStorage.setItem("photo", photo); // NEW
 
       // Update App state
       onLogin(token);
@@ -39,7 +42,6 @@ export default function Login({ onLogin }) {
         gap: "10px",
       }}
     >
-      {/* Error inline */}
       {error && (
         <span style={{ color: "red", fontSize: "0.85rem" }}>{error}</span>
       )}

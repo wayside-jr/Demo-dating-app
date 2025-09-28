@@ -11,6 +11,7 @@ export default function Users({ token }) {
   const loggedUser = {
     username: localStorage.getItem("username"),
     email: localStorage.getItem("email"),
+    photo: localStorage.getItem("photo"), // NEW
   };
 
   useEffect(() => {
@@ -46,15 +47,32 @@ export default function Users({ token }) {
     setCurrentIndex((prev) => (prev < users.length - 1 ? prev + 1 : 0));
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("photo");
+    navigate("/login");
+  };
+
   const mainUser = users[currentIndex];
 
   return (
     <div className="users-page">
       {/* Side panel */}
       <aside className="users-sidepanel">
-        <h2>Logged In</h2>
+        {loggedUser.photo ? (
+          <img
+            src={`http://127.0.0.1:5000/uploads/${loggedUser.photo}`}
+            alt={loggedUser.username}
+            className="sidepanel-photo"
+          />
+        ) : (
+          <div className="sidepanel-placeholder">No Photo</div>
+        )}
         <h3>{loggedUser.username}</h3>
         <p>{loggedUser.email}</p>
+       
       </aside>
 
       {/* Main content */}
@@ -83,7 +101,6 @@ export default function Users({ token }) {
                   <p>{mainUser.email}</p>
                 </div>
               </div>
-              {/* Chat button outside the card */}
               <button
                 onClick={() => handleChat(mainUser)}
                 className="chat-btn outside"
