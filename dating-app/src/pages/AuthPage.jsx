@@ -95,7 +95,7 @@ export default function AuthPage({ onLogin }) {
       </div>
 
       {/* 3-column TEXTS below */}
-      <div style={{ display: "flex", width: "90%", minHeight: "250px" }}>
+      <div style={{ display: "flex", width: "85%", minHeight: "250px" }}>
         <div
           style={{
             flex: 1,
