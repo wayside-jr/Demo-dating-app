@@ -4,27 +4,44 @@ import "./Users.css";
 
 export default function Users({ token, currentUser, setCurrentUser, onLogout }) {
   const [users, setUsers] = useState([]);
+  const [likedUserIds, setLikedUserIds] = useState([]); // store ids liked by current user
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
 
-  // Use currentUser from props for side panel
   const loggedUser = currentUser;
 
-  // Fetch other users
+  // Fetch other users (with likes_count)
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:5000/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch users");
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
+    fetchUsers();
+  }, [token]);
+
+  // Fetch who I already liked
+  useEffect(() => {
+    const fetchLikes = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:5000/users", {
+        const res = await fetch("http://127.0.0.1:5000/likes", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!res.ok) throw new Error("Failed to fetch users");
-        const data = await res.json();
-        setUsers(data);
+        const ids = await res.json();
+        setLikedUserIds(ids);
       } catch (err) {
         console.error(err);
       }
     };
-    fetchUsers();
+    fetchLikes();
   }, [token]);
 
   const handleChat = (user) => {
@@ -47,6 +64,40 @@ export default function Users({ token, currentUser, setCurrentUser, onLogout }) 
   const handleLogout = () => {
     onLogout && onLogout();
     navigate("/auth");
+  };
+
+  // like/unlike toggle
+  const handleLike = async (user) => {
+    const liked = likedUserIds.includes(user.id);
+    try {
+      if (liked) {
+        await fetch(`http://127.0.0.1:5000/likes/${user.id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setLikedUserIds((prev) => prev.filter((id) => id !== user.id));
+        // decrement local count
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === user.id ? { ...u, likes_count: u.likes_count - 1 } : u
+          )
+        );
+      } else {
+        await fetch(`http://127.0.0.1:5000/likes/${user.id}`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setLikedUserIds((prev) => [...prev, user.id]);
+        // increment local count
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === user.id ? { ...u, likes_count: u.likes_count + 1 } : u
+          )
+        );
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const mainUser = users[currentIndex];
@@ -81,8 +132,6 @@ export default function Users({ token, currentUser, setCurrentUser, onLogout }) 
         >
           Edit Profile
         </button>
-
-     
       </aside>
 
       <main className="users-main">
@@ -108,12 +157,47 @@ export default function Users({ token, currentUser, setCurrentUser, onLogout }) 
                 <div className="user-info-overlay">
                   <h3>{mainUser.username}</h3>
                   <p>{mainUser.email}</p>
+                  <p>
+                    ❤️ {mainUser.likes_count}{" "}
+                    {likedUserIds.includes(mainUser.id) && " (You liked)"}
+                  </p>
                 </div>
               </div>
 
-              <button onClick={() => handleChat(mainUser)} className="chat-btn outside">
-                Chat
-              </button>
+              <div className="user-actions">
+                <button
+                  onClick={() => handleLike(mainUser)}
+                  className="like-btn"
+                  style={{
+                    padding: "4px 8px",
+                    marginRight: "8px",
+                    background: likedUserIds.includes(mainUser.id)
+                      ? "#f87171"
+                      : "#e5e7eb",
+                    color: likedUserIds.includes(mainUser.id) ? "#fff" : "#000",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  {likedUserIds.includes(mainUser.id) ? "Unlike" : "Like"}
+                </button>
+
+                <button
+                  onClick={() => handleChat(mainUser)}
+                  className="chat-btn outside"
+                  style={{
+                    padding: "4px 8px",
+                    background: "#2563eb",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Chat
+                </button>
+              </div>
             </div>
 
             <button className="arrow-btn right" onClick={handleNext}>

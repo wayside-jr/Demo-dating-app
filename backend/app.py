@@ -7,13 +7,13 @@ from flask_socketio import SocketIO, emit, join_room, disconnect
 from datetime import datetime, timedelta
 import os
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 # --------------------------
 # Config
 # --------------------------
-basedir = os.path.abspath(os.path.dirname(_file_))
+basedir = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(basedir, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'dating.db')
@@ -310,5 +310,5 @@ def handle_send_message(data):
 # --------------------------
 # Run
 # --------------------------
-if _name_ == '_main_':
+if __name__ == '__main__':
     socketio.run(app, debug=True)
