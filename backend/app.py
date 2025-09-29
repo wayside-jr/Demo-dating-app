@@ -7,13 +7,13 @@ from flask_socketio import SocketIO, emit, join_room, disconnect
 from datetime import datetime, timedelta
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 CORS(app, supports_credentials=True)
 
 # --------------------------
 # Config
 # --------------------------
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(_file_))
 UPLOAD_FOLDER = os.path.join(basedir, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'dating.db')
@@ -44,6 +44,13 @@ class Message(db.Model):
     content = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+# NEW: Like model
+class Like(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    liker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    liked_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
 # --------------------------
 # Create DB
 # --------------------------
@@ -51,7 +58,7 @@ with app.app_context():
     db.create_all()
 
 # --------------------------
-# Auth Routes
+# Auth Routes (same)
 # --------------------------
 @app.route('/auth/signup', methods=['POST'])
 def signup():
@@ -92,7 +99,6 @@ def login():
         }), 200
     return jsonify({'msg': 'Invalid credentials'}), 401
 
-# Edit profile
 @app.route('/auth/edit', methods=['PUT'])
 @jwt_required()
 def edit_profile():
@@ -110,7 +116,6 @@ def edit_profile():
     if email: 
         user.email = email
     if photo_file:
-        # delete old photo if exists
         if user.photo:
             old_path = os.path.join(app.config['UPLOAD_FOLDER'], user.photo)
             if os.path.exists(old_path):
@@ -122,7 +127,6 @@ def edit_profile():
 
     db.session.commit()
 
-    # Return full updated user object
     return jsonify({
         'id': user.id,
         'username': user.username,
@@ -130,7 +134,6 @@ def edit_profile():
         'photo': user.photo
     }), 200
 
-# Delete account
 @app.route('/auth/delete', methods=['DELETE'])
 @jwt_required()
 def delete_account():
@@ -156,20 +159,25 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # --------------------------
-# Users Route
+# Users Route (now returns likes_count)
 # --------------------------
 @app.route('/users', methods=['GET'])
 @jwt_required()
 def get_users():
-    current_user_id = get_jwt_identity()
-    users = User.query.filter(User.id != int(current_user_id)).all()
-    output = [
-        {'id': u.id, 'username': u.username, 'email': u.email, 'photo': u.photo}
-        for u in users
-    ]
+    current_user_id = int(get_jwt_identity())
+    users = User.query.filter(User.id != current_user_id).all()
+    output = []
+    for u in users:
+        likes_count = Like.query.filter_by(liked_user_id=u.id).count()
+        output.append({
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'photo': u.photo,
+            'likes_count': likes_count
+        })
     return jsonify(output), 200
 
-# Get current logged-in user
 @app.route('/users/me', methods=['GET'])
 @jwt_required()
 def get_me():
@@ -180,7 +188,42 @@ def get_me():
     return jsonify({'id': user.id, 'username': user.username, 'email': user.email, 'photo': user.photo}), 200
 
 # --------------------------
-# Chat Routes
+# Likes Routes
+# --------------------------
+@app.route('/likes', methods=['GET'])
+@jwt_required()
+def get_my_likes():
+    """Return ids the current user has liked"""
+    current_user_id = int(get_jwt_identity())
+    likes = Like.query.filter_by(liker_id=current_user_id).all()
+    return jsonify([l.liked_user_id for l in likes]), 200
+
+@app.route('/likes/<int:user_id>', methods=['POST'])
+@jwt_required()
+def like_user(user_id):
+    current_user_id = int(get_jwt_identity())
+    if current_user_id == user_id:
+        return jsonify({'msg': 'Cannot like yourself'}), 400
+    if Like.query.filter_by(liker_id=current_user_id, liked_user_id=user_id).first():
+        return jsonify({'msg': 'Already liked'}), 400
+    new_like = Like(liker_id=current_user_id, liked_user_id=user_id)
+    db.session.add(new_like)
+    db.session.commit()
+    return jsonify({'msg': 'Liked'}), 201
+
+@app.route('/likes/<int:user_id>', methods=['DELETE'])
+@jwt_required()
+def unlike_user(user_id):
+    current_user_id = int(get_jwt_identity())
+    like = Like.query.filter_by(liker_id=current_user_id, liked_user_id=user_id).first()
+    if not like:
+        return jsonify({'msg': 'Not liked'}), 404
+    db.session.delete(like)
+    db.session.commit()
+    return jsonify({'msg': 'Unliked'}), 200
+
+# --------------------------
+# Chat Routes (same)
 # --------------------------
 @app.route('/messages', methods=['POST'])
 @jwt_required()
@@ -225,7 +268,7 @@ def get_messages(user_id):
     return jsonify(output), 200
 
 # --------------------------
-# WebSocket Events
+# WebSocket Events (same)
 # --------------------------
 @socketio.on('connect')
 def socket_connect(auth):
@@ -267,5 +310,5 @@ def handle_send_message(data):
 # --------------------------
 # Run
 # --------------------------
-if __name__ == '__main__':
+if _name_ == '_main_':
     socketio.run(app, debug=True)
