@@ -9,7 +9,6 @@ export default function EditProfile({ token, currentUser, setCurrentUser, onLogo
   const [msg, setMsg] = useState("");
   const navigate = useNavigate();
 
-  // Fetch current user data from backend
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -39,13 +38,9 @@ export default function EditProfile({ token, currentUser, setCurrentUser, onLogo
       });
 
       const updatedUser = res.data;
-
-      // Update localStorage
       localStorage.setItem("username", updatedUser.username);
       localStorage.setItem("email", updatedUser.email);
       localStorage.setItem("photo", updatedUser.photo || "");
-
-      // Update parent state
       setCurrentUser && setCurrentUser(updatedUser);
 
       setMsg("Profile updated successfully!");
@@ -55,7 +50,6 @@ export default function EditProfile({ token, currentUser, setCurrentUser, onLogo
     }
   };
 
-  // Delete account function
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete your account?")) return;
 
@@ -64,7 +58,6 @@ export default function EditProfile({ token, currentUser, setCurrentUser, onLogo
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Clear storage & logout
       localStorage.clear();
       setCurrentUser && setCurrentUser({ username: "", email: "", photo: "" });
       onLogout && onLogout();
@@ -72,6 +65,10 @@ export default function EditProfile({ token, currentUser, setCurrentUser, onLogo
     } catch (err) {
       setMsg(err?.response?.data?.msg || "Delete failed");
     }
+  };
+
+  const handleCancel = () => {
+    navigate("/users");
   };
 
   return (
@@ -113,22 +110,6 @@ export default function EditProfile({ token, currentUser, setCurrentUser, onLogo
         )}
         <h3 style={{ margin: "5px 0" }}>{currentUser.username}</h3>
         <p style={{ margin: "5px 0", fontSize: "0.9rem" }}>{currentUser.email}</p>
-
-        <button
-          onClick={() => navigate("/edit-profile")}
-          style={{
-            marginTop: "10px",
-            padding: "6px 12px",
-            background: "#2563eb",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            width: "100%",
-          }}
-        >
-          Edit Profile
-        </button>
       </aside>
 
       {/* Main content */}
@@ -138,65 +119,92 @@ export default function EditProfile({ token, currentUser, setCurrentUser, onLogo
           maxWidth: "600px",
           margin: "50px auto",
           padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
         }}
       >
-        <h2>Edit Profile</h2>
-        {msg && <p style={{ color: msg.includes("failed") ? "red" : "green" }}>{msg}</p>}
-
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Username"
-            required
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-            style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setPhoto(e.target.files[0])}
-            style={{ marginBottom: "10px" }}
-          />
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: "8px",
-              backgroundColor: "#2563eb",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-            }}
-          >
-            Update Profile
-          </button>
-        </form>
-
-        <button
-          onClick={handleDelete}
-          style={{
-            marginTop: "20px",
-            width: "100%",
-            padding: "8px",
-            backgroundColor: "#dc2626",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-          }}
-        >
-          Delete Account
-        </button>
+        <div>
+          <h2>Edit Profile</h2>
+          {msg && (
+            <p style={{ color: msg.includes("failed") ? "red" : "green" }}>{msg}</p>
+          )}
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              required
+              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+            />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              required
+              style={{ width: "100%", padding: "8px", marginBottom: "10px" }}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setPhoto(e.target.files[0])}
+              style={{ marginBottom: "10px" }}
+            />
+            {/* Buttons container */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "8px",
+                marginTop: "20px",
+              }}
+            >
+              <button
+                type="submit"
+                style={{
+                  padding: "6px 12px",
+                  backgroundColor: "#2563eb",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Update
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                style={{
+                  padding: "6px 12px",
+                  backgroundColor: "#dc2626",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                style={{
+                  padding: "6px 12px",
+                  backgroundColor: "#6b7280",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
