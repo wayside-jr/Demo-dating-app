@@ -156,10 +156,10 @@ export default function Users({ token, currentUser, setCurrentUser, onLogout }) 
                 />
                 <div className="user-info-overlay">
                   <h3>{mainUser.username}</h3>
-                  <p>{mainUser.email}</p>
+                  
                   <p>
                     ❤️ {mainUser.likes_count}{" "}
-                    {likedUserIds.includes(mainUser.id) && " (You liked)"}
+                    {likedUserIds.includes(mainUser.id)}
                   </p>
                 </div>
               </div>
@@ -169,10 +169,10 @@ export default function Users({ token, currentUser, setCurrentUser, onLogout }) 
                   onClick={() => handleLike(mainUser)}
                   className="like-btn"
                   style={{
-                    padding: "4px 8px",
+                    padding: "6px 8px",
                     marginRight: "8px",
                     background: likedUserIds.includes(mainUser.id)
-                      ? "#f87171"
+                      ? "#e70b0bff"
                       : "#e5e7eb",
                     color: likedUserIds.includes(mainUser.id) ? "#fff" : "#000",
                     border: "none",
@@ -187,7 +187,7 @@ export default function Users({ token, currentUser, setCurrentUser, onLogout }) 
                   onClick={() => handleChat(mainUser)}
                   className="chat-btn outside"
                   style={{
-                    padding: "4px 8px",
+                    padding: "8px 8px",
                     background: "#2563eb",
                     color: "#fff",
                     border: "none",
