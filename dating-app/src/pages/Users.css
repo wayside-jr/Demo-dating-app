@@ -1,14 +1,14 @@
 .users-page {
   display: flex;
   min-height: 100vh;
-  background: #f9f9f9;
+  background: #a56666;
   
 }
 
 /* ----------------- Side Panel ----------------- */
 .users-sidepanel {
   width: 250px; /* fixed width */
-  background: #ffffff; /* different bg for separation */
+  background: #dac0c0; /* different bg for separation */
   border-right: 1px solid #ddd;
   display: flex;
   flex-direction: column;
@@ -70,7 +70,7 @@
   justify-content: center;
   align-items: center;
   padding: 40px;
-  background: #f0f4f8; /* subtle background to separate from sidebar */
+  background: #bb7876; /* subtle background to separate from sidebar */
 }
 
 /* ----------------- Big User Card ----------------- */
@@ -157,4 +157,20 @@
 
 .arrow-btn.right {
   margin-left: 10px;
+}
+.like-btn {
+  background-color: #ff052f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 8px;   /* 🔹 smaller button */
+  font-size: 17px;    /* 🔹 smaller text */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.like-btn.liked {
+  background-color: #e11d48;
+}
+.like-btn:hover {
+  background-color: #be123c;
 }
