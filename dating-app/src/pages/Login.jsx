@@ -18,7 +18,7 @@ export default function Login({ onLogin }) {
 
       const userData = {
         username: data.username,
-        email: email,
+        email: data.email, // use backend-provided email for consistency
         photo: data.photo || "",
       };
 
